@@ -2,14 +2,9 @@ package io.marregui;
 
 public class BasicCalculator {
 
-    // <INT>  := '-'? [0..9]+
-    // <OP>   := '+' | '-'
-    // <EXPR> := '(' + <Expr> + ')' | <Expr>
-    // <Expr> := <INT> <OP> <INT> | <INT> <OP> <EXPR> | <EXPR> <OP> <INT>
-
+    private static final char SENTINEL = '#';
 
     private int[] digits;
-    private int digitsIdx;
     private Node[] stack;
     private int top;
 
@@ -27,26 +22,62 @@ public class BasicCalculator {
         int limit = s.length();
         int i = 0;
         char lastSeen = '\0';
+        top = -1;
         while (i < limit) {
             i = skipWhites(s, i, limit);
             if (i >= limit) {
                 break;
             }
             char c = s.charAt(i);
-            if (isStartOfInt(c) && (lastSeen == '\0' || isOp(lastSeen))) {
+            if (isStartOfInt(c) && (lastSeen == '\0' || lastSeen == '(' || isOp(lastSeen))) {
+                int originalI = i;
                 i = parseInt(c, s, i, limit);
-                lastSeen = s.charAt(i - 1);
+                if (i > originalI) {
+                    lastSeen = s.charAt(i - 1);
+                } else {
+                    addToStack(new NegNode());
+                    i++;
+                }
             } else if (isOp(c)) {
                 if (top > -1) {
-                    stack[top] = new OpNode(c, stack[top]);
-                    i++;
+                    Node node = stack[top];
+                    if (node instanceof OpNode opNode && opNode.op == SENTINEL) {
+                        opNode.op = c;
+                    } else {
+                        stack[top] = new OpNode(c, stack[top]);
+                    }
                 } else {
                     throw new IllegalArgumentException("missing left operand at offset: " + i);
                 }
                 lastSeen = c;
+                i++;
+            } else if (c == '(') {
+                addToStack(new OpNode(SENTINEL, null));
+                lastSeen = c;
+                i++;
+            } else if (c == ')') {
+                if (top > 0) {
+                    Node node = stack[top--];
+                    Node topNode = stack[top];
+                    if (topNode.left == null) {
+                        topNode.left = node;
+                    } else {
+                        topNode.right = node;
+                    }
+                }
+                lastSeen = c;
+                i++;
             }
         }
-        if (top == 0) {
+
+        if (top > -1) {
+            while (top > 0) {
+                Node node = stack[top--];
+                Node topNode = stack[top];
+                if (topNode instanceof NegNode) {
+                    topNode.left = node;
+                }
+            }
             return stack[top--].eval();
         }
         throw new IllegalArgumentException("bad expression: " + s);
@@ -69,7 +100,7 @@ public class BasicCalculator {
                 return originalI;
             }
         }
-        digitsIdx = 0;
+        int digitsIdx = 0;
         while (i < limit && isDigit(c = s.charAt(i))) {
             if (digitsIdx >= digits.length) {
                 int[] t = new int[digits.length * 2];
@@ -82,14 +113,17 @@ public class BasicCalculator {
         int factor = 1;
         int n = 0;
         for (int j = digitsIdx - 1; j > -1; j--) {
-            n = digits[j] * factor;
+            n += digits[j] * factor;
             factor *= 10;
         }
         IntNode inode = new IntNode(n * sign);
         if (top > -1) {
-            Node node = stack[top];
-            if (!node.isLeaf()) {
-                node.right = inode;
+            if (stack[top] instanceof OpNode opNode) {
+                if (opNode.left == null) {
+                    opNode.left = inode;
+                } else {
+                    opNode.right = inode;
+                }
                 return i;
             }
         }
@@ -134,13 +168,11 @@ public class BasicCalculator {
             this.right = right;
         }
 
-        abstract boolean isLeaf();
-
         abstract int eval();
     }
 
     private static class OpNode extends Node {
-        private final char op;
+        private char op;
 
         OpNode(char op, Node left) {
             super(left, null);
@@ -148,17 +180,24 @@ public class BasicCalculator {
         }
 
         @Override
-        boolean isLeaf() {
-            return false;
+        int eval() {
+            return switch (op) {
+                case '+' -> left.eval() + (right != null ? right.eval() : 0);
+                case '-' -> left.eval() - (right != null ? right.eval() : 0);
+                case SENTINEL -> left.eval();
+                default -> throw new IllegalArgumentException("unknown op: " + op);
+            };
+        }
+    }
+
+    private static class NegNode extends OpNode {
+        NegNode() {
+            super('-', null);
         }
 
         @Override
         int eval() {
-            return switch (op) {
-                case '+' -> left.eval() + right.eval();
-                case '-' -> left.eval() - right.eval();
-                default -> throw new IllegalArgumentException("unknown op: " + op);
-            };
+            return -left.eval();
         }
     }
 
@@ -170,10 +209,6 @@ public class BasicCalculator {
             this.value = value;
         }
 
-        @Override
-        boolean isLeaf() {
-            return true;
-        }
 
         @Override
         int eval() {
