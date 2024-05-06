@@ -64,8 +64,8 @@ public class DelayedSchedulerImpl implements DelayedScheduler, AutoCloseable {
     }
 
     private int checkWorkers(int callCount) {
-        int next = callCount + 1;
-        if (next > CHECK_WORKERS_MARK) {
+        int nextCallCount = callCount + 1;
+        if (nextCallCount > CHECK_WORKERS_MARK) {
             workersLock.lock();
             try {
                 for (int i = 0; i < workers.length; i++) {
@@ -80,9 +80,9 @@ public class DelayedSchedulerImpl implements DelayedScheduler, AutoCloseable {
             } finally {
                 workersLock.unlock();
             }
-            next = 0;
+            nextCallCount = 0;
         }
-        return next;
+        return nextCallCount;
     }
 
     private void worker() {
@@ -100,7 +100,7 @@ public class DelayedSchedulerImpl implements DelayedScheduler, AutoCloseable {
                 if (remaining > 0) {
                     addTask(task);
                     checkWorkersCounter = checkWorkers(checkWorkersCounter);
-                    TimeUnit.MILLISECONDS.sleep(remaining - 1);
+                    TimeUnit.MILLISECONDS.sleep(remaining - 10);
                     continue;
                 }
 

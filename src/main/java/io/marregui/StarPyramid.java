@@ -9,10 +9,10 @@ public class StarPyramid {
             int numStars = 2 * i + 1;
             int prefixLen = (widthAtBase - numStars) / 2;
             for (int k = 0; k < prefixLen; k++) {
-                sb.append(" ");
+                sb.append(' ');
             }
             for (int k = 0; k < numStars; k++) {
-                sb.append("*");
+                sb.append('*');
             }
             System.out.println(sb);
             sb.setLength(0);

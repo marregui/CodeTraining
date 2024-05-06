@@ -129,7 +129,6 @@ public class BinaryTreeIntegerRepresentation {
             TreeNode tmp = root.right;
             root.right = root.left;
             root.left = null;
-
             TreeNode curr = root.right;
             while (curr.right != null) {
                 curr = curr.right;

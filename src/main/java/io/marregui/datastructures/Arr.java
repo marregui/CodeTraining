@@ -28,6 +28,11 @@ public class Arr implements Closeable {
             if (i == idx) {
                 arr[i] = value;
             } else {
+                if (idx + 1 >= arr.length) {
+                    int[] arr2 = new int[arr.length * 2];
+                    System.arraycopy(arr, 0, arr2, 0, arr.length);
+                    arr = arr2;
+                }
                 System.arraycopy(arr, i, arr, i + 1, arr.length - i - 1);
                 arr[i] = value;
             }

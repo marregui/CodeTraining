@@ -7,6 +7,7 @@ public class MergeIntervals {
         if (intervals == null || intervals.length < 2) {
             return intervals;
         }
+        sort(intervals, 0, intervals.length - 1);
         int resultIdx = 1;
         for (int i = 1; i < intervals.length; i++) {
             int[] curr = intervals[i];
@@ -38,11 +39,7 @@ public class MergeIntervals {
         System.out.println(sb);
     }
 
-    private static void sort(int[][] array) {
-        sort(array, 0, array.length - 1);
-    }
-
-    private static void sort(int[][] array, int lo, int hi) {
+    public static void sort(int[][] array, int lo, int hi) {
         if (array == null || lo < 0 || hi > array.length || lo >= hi) {
             return;
         }
@@ -77,14 +74,10 @@ public class MergeIntervals {
 
 
     public static void main(String[] args) {
-//        p(merge(new int[][]{{1, 3}, {15, 18}, {8, 10}, {2, 6}}));
-//        p(merge(new int[][]{{1, 4}, {4, 5}}));
-//        p(merge(new int[][]{{1, 4}, {2, 3}}));
-//        p(merge(new int[][]{{1, 4}, {0, 2}, {3, 5}}));
+        p(merge(new int[][]{{1, 3}, {15, 18}, {8, 10}, {2, 6}}));
+        p(merge(new int[][]{{1, 4}, {4, 5}}));
+        p(merge(new int[][]{{1, 4}, {2, 3}}));
+        p(merge(new int[][]{{1, 4}, {0, 2}, {3, 5}}));
         p(merge(new int[][]{{1, 4}, {0, 4}}));
-
-        int[][] a = new int[][]{{1, 3}, {15, 18}, {8, 10}, {2, 6}};
-        sort(a);
-        p(a);
     }
 }
