@@ -1,9 +1,5 @@
 package io.marregui;
 
-import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.toList;
-
 public class CanWinNim {
 
     // You are playing the following Nim Game with your friend:
