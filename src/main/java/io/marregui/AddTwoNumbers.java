@@ -63,7 +63,7 @@ public class AddTwoNumbers {
         return root;
     }
 
-    private static ListNode toList(int... values) {
+    public static ListNode toList(int... values) {
         if (values.length == 0) {
             return null;
         }
