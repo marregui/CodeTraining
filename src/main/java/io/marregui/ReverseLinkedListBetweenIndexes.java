@@ -3,21 +3,13 @@ package io.marregui;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public class ReberseLinkedListBetweenIndexes {
+public class ReverseLinkedListBetweenIndexes {
     public static class ListNode {
         int val;
         ListNode next;
 
-        ListNode() {
-        }
-
         ListNode(int val) {
             this.val = val;
-        }
-
-        ListNode(int val, ListNode next) {
-            this.val = val;
-            this.next = next;
         }
     }
 
@@ -92,6 +84,7 @@ public class ReberseLinkedListBetweenIndexes {
         System.out.println(sb);
     }
 
+
     public static void main(String[] args) {
         ListNode l1 = reverseBetween(toList(1, 2, 3, 4, 5), 2, 4);
         printList(l1);
@@ -99,6 +92,5 @@ public class ReberseLinkedListBetweenIndexes {
         printList(l2);
         ListNode l3 = reverseBetween(toList(5), 1, 1);
         printList(l3);
-        System.out.println();
     }
 }
