@@ -1,5 +1,6 @@
-package io.marregui.scheduler;
+package io.marregui;
 
+import io.marregui.scheduler.Task;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,10 +1,10 @@
-package io.marregui.datastructures;
+package io.marregui;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static io.marregui.datastructures.BinaryTreeIntegerRepresentation.TreeNode;
-import static io.marregui.datastructures.BinaryTreeIntegerRepresentation.flatten;
+import static io.marregui.BinaryTreeIntegerRepresentation.TreeNode;
+import static io.marregui.BinaryTreeIntegerRepresentation.flatten;
 
 
 public class BinaryTreeIntegerRepresentationTest {

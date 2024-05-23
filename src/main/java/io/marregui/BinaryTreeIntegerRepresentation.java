@@ -1,4 +1,4 @@
-package io.marregui.datastructures;
+package io.marregui;
 
 import java.util.ArrayList;
 import java.util.Deque;

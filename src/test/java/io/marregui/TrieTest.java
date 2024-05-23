@@ -1,4 +1,4 @@
-package io.marregui.datastructures;
+package io.marregui;
 
 import org.junit.jupiter.api.Test;
 

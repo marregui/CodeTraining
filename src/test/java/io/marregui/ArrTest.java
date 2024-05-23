@@ -1,6 +1,5 @@
-package io.marregui.datastructures;
+package io.marregui;
 
-import io.marregui.Daemon;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

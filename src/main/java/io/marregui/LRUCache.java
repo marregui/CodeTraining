@@ -1,4 +1,4 @@
-package io.marregui.datastructures.cache;
+package io.marregui;
 
 public class LRUCache {
     // Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
@@ -29,20 +29,20 @@ public class LRUCache {
         if (keyNode != null) { // key exists, update both value and access order
             Node<Integer> valueNode = keyNode.val;
             valueNode.val = value;
-            keys.moveLast(keyNode);
-            values[bucket].moveLast(valueNode);
+            keys.moveToTail(keyNode);
+            values[bucket].moveToTail(valueNode);
         } else {
             if (size == capacity) {
-                keys.popLeft();
-                values[bucket].popLeft();
+                Node<Node<Integer>> evicted = keys.pop();
+                values[evicted.key % capacity].pop();
                 size--;
             }
             Node<Integer> valueNode = new Node<>(key, value);
-            keys.pushRight(new Node<>(key, valueNode));
+            keys.append(new Node<>(key, valueNode));
             if (values[bucket] == null) {
                 values[bucket] = new DLLifo<>();
             }
-            values[bucket].pushRight(valueNode);
+            values[bucket].append(valueNode);
             size++;
         }
     }
@@ -57,8 +57,9 @@ public class LRUCache {
         if (val == null) {
             return -1;
         }
-        values[bucket].moveLast(val);
-        keys.moveLast(keys.find(key));
+        Node<Node<Integer>> k = keys.find(key);
+        keys.moveToTail(k);
+        values[bucket].moveToTail(val);
         return val.val;
     }
 
@@ -67,29 +68,28 @@ public class LRUCache {
         return keys.toString();
     }
 
-
-    private static class Node<T> {
+    static class Node<T> {
         final int key;
         T val;
         Node<T> prev;
         Node<T> next;
 
-        public Node(int key, T val) {
+        Node(int key, T val) {
             this.key = key;
             this.val = val;
         }
 
         @Override
         public String toString() {
-            return new StringBuilder("[k:").append(key).append(", v:").append(val).append(']').toString();
+            return new StringBuilder("[").append(key).append(',').append(val).append(']').toString();
         }
     }
 
-    private static class DLLifo<T> {
+    static class DLLifo<T> {
         Node<T> head;
         Node<T> tail;
 
-        Node<T> popLeft() {
+        Node<T> pop() {
             if (head == null) {
                 return null;
             }
@@ -100,35 +100,41 @@ public class LRUCache {
                 head = head.next;
                 head.prev = null;
             }
+            node.prev = null;
+            node.next = null;
             return node;
         }
 
-        void pushRight(Node<T> node) {
+        void append(Node<T> node) {
             if (head == null) {
+                node.prev = null;
                 head = node;
                 tail = head;
             } else {
                 node.prev = tail;
                 tail.next = node;
                 tail = node;
-                tail.next = null;
             }
+            node.next = null;
         }
 
-        void moveLast(Node<T> node) {
-            if (node.prev == null && node.next == null) {
+        void moveToTail(Node<T> node) {
+            if (node == null || node == tail || (node.prev == null && node.next == null)) {
                 return;
             }
-            if (node.prev == null) {
-                head = node.next;
+            if (node == head) {
+                head = head.next;
                 head.prev = null;
             } else {
-                node.prev.next = node.next;
+                Node<T> p0 = node.prev;
+                Node<T> p1 = node.next;
+                p0.next = p1;
+                p1.prev = p0;
             }
             node.prev = tail;
             node.next = null;
             tail.next = node;
-            tail = node;
+            tail = tail.next;
         }
 
         Node<T> find(int key) {
@@ -147,17 +153,14 @@ public class LRUCache {
         String toString(Node<T> start) {
             Node<T> ptr = start != null ? start : head;
             StringBuilder sb = new StringBuilder();
-            int s = 0;
             while (ptr != null) {
-                sb.append(ptr).append(" <-> ");
+                sb.append(ptr).append(' ');
                 ptr = ptr.next;
-                s++;
             }
             int len = sb.length();
             if (len > 0) {
-                sb.setLength(len - 5);
+                sb.setLength(len - 1);
             }
-            sb.append(" size: ").append(s);
             return sb.toString();
         }
     }

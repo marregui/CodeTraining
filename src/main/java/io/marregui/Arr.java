@@ -1,6 +1,4 @@
-package io.marregui.datastructures;
-
-import io.marregui.ThrLocal;
+package io.marregui;
 
 import java.io.Closeable;
 import java.util.Arrays;
