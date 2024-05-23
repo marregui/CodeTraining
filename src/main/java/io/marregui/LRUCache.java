@@ -1,5 +1,8 @@
 package io.marregui;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LRUCache {
     // Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
     //
@@ -19,7 +22,7 @@ public class LRUCache {
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
-        keys = new DLLifo<>();
+        keys = new DLLifo<>(capacity);
         values = new DLLifo[capacity];
     }
 
@@ -40,7 +43,7 @@ public class LRUCache {
             Node<Integer> valueNode = new Node<>(key, value);
             keys.append(new Node<>(key, valueNode));
             if (values[bucket] == null) {
-                values[bucket] = new DLLifo<>();
+                values[bucket] = new DLLifo<>(capacity);
             }
             values[bucket].append(valueNode);
             size++;
@@ -88,6 +91,11 @@ public class LRUCache {
     static class DLLifo<T> {
         Node<T> head;
         Node<T> tail;
+        final Map<Integer, Node<T>> map;
+
+        DLLifo(int capacity) {
+            map = new HashMap<>(capacity);
+        }
 
         Node<T> pop() {
             if (head == null) {
@@ -102,6 +110,7 @@ public class LRUCache {
             }
             node.prev = null;
             node.next = null;
+            map.remove(node.key);
             return node;
         }
 
@@ -116,6 +125,7 @@ public class LRUCache {
                 tail = node;
             }
             node.next = null;
+            map.put(node.key, node);
         }
 
         void moveToTail(Node<T> node) {
@@ -138,11 +148,7 @@ public class LRUCache {
         }
 
         Node<T> find(int key) {
-            Node<T> ptr = head;
-            while (ptr != null && ptr.key != key) {
-                ptr = ptr.next;
-            }
-            return ptr;
+            return map.get(key);
         }
 
         @Override

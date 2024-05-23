@@ -110,7 +110,7 @@ public class LRUCacheTest {
 
     @Test
     public void testDDLifo() {
-        DLLifo<Integer> ddl = new DLLifo<>();
+        DLLifo<Integer> ddl = new DLLifo<>(3);
         Assertions.assertNull(ddl.pop());
         Node<Integer> node0 = new Node<>(1, 2);
         Node<Integer> node1 = new Node<>(2, 5);
@@ -131,7 +131,7 @@ public class LRUCacheTest {
 
     @Test
     public void testMoveToTail() {
-        DLLifo<Integer> ddl = new DLLifo<>();
+        DLLifo<Integer> ddl = new DLLifo<>(4);
         Assertions.assertNull(ddl.pop());
         Node<Integer> node0 = new Node<>(1, 2);
         Node<Integer> node1 = new Node<>(2, 5);
