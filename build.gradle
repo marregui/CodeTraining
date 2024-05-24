@@ -16,6 +16,8 @@ java {
 
 dependencies {
     implementation 'org.jetbrains:annotations:24.1.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.sparkjava:spark-core:2.9.4'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
 }
 
@@ -24,5 +26,5 @@ test {
 }
 
 wrapper {
-    gradleVersion = '8.6'
+    gradleVersion = '8.7'
 }

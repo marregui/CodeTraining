@@ -17,7 +17,7 @@ public class MinStack {
 
     private int[] stack;
     int top;
-    private List<Integer> mins;
+    private LinkedList<Integer> mins;
 
     public MinStack() {
         stack = new int[16];

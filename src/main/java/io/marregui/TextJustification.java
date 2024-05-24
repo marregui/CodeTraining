@@ -1,8 +1,6 @@
 package io.marregui;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class TextJustification {
 
@@ -63,16 +61,16 @@ public class TextJustification {
                             tmp.append(' ');
                         }
                     }
-                    tmp.append(wordsInLine.getLast());
+                    tmp.append(wordsInLine.get(wordsInLine.size() - 1));
                 } else if (numWords == 2) {
-                    tmp.append(wordsInLine.getFirst());
+                    tmp.append(wordsInLine.get(0));
                     for (int i = 0, n = sta; i < n; i++) {
                         tmp.append(' ');
                     }
-                    tmp.append(wordsInLine.getLast());
+                    tmp.append(wordsInLine.get(wordsInLine.size() - 1));
                 }
                 if (numWords == 1) {
-                    tmp.append(wordsInLine.getLast());
+                    tmp.append(wordsInLine.get(wordsInLine.size() - 1));
                     for (int i = 0, n = maxWidth - tmp.length(); i < n; i++) {
                         tmp.append(' ');
                     }
