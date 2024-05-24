@@ -1,13 +1,5 @@
 package io.marregui.microservice;
 
-/**
- * Represents the response that travels back to the requester upon having sent
- * an http request. The response is JSON serialised before it is sent back to
- * the browser.
- *
- * @param <T>
- * @author Miguel Arregui (miguel.arregui@gmail.com)
- */
 public class ResponseMessage<T> {
     public enum Status {
         Success, Failure;

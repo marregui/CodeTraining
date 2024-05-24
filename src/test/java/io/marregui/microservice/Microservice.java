@@ -24,7 +24,7 @@ public class Microservice {
     private static final Gson GSON = new Gson();
 
     <T> void defaultPage(T usage) {
-        get(ROOTPATH, APPJSON, (req, res) -> {
+        get(ROOT_PATH, APP_JSON, (req, res) -> {
             setResponseHeaders(res);
             return GSON.toJson(ResponseMessage.success(usage));
         });
@@ -42,8 +42,8 @@ public class Microservice {
             setResponseHeaders(res);
             return GSON.toJson(ResponseMessage.success(String.format("Hello!, plus extra: %s", Arrays.asList(params))));
         };
-        get(routepath(command, false), APPJSON, routeAction); // parameter-less
-        get(routepath(command, true), APPJSON, routeAction); // with parameters
+        get(routePath(command, false), APP_JSON, routeAction); // parameter-less
+        get(routePath(command, true), APP_JSON, routeAction); // with parameters
     }
 
     public static void main(String[] args) {

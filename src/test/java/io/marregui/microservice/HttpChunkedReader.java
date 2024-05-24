@@ -5,8 +5,6 @@ import java.io.BufferedReader;
 /**
  * Encapsulates the readout (slurp) of a whole response from an http based
  * server (which could be a heap killing chunk of text).
- *
- * @author Miguel Arregui (miguel.arregui@gmail.com)
  */
 public final class HttpChunkedReader {
     private static final ILogger LOGGER = Logger.loggerFor(HttpChunkedReader.class);
@@ -98,7 +96,7 @@ public final class HttpChunkedReader {
     }
 
     private static int hexToDec(char c) {
-        char lc = Character.toLowerCase(c);
+        char lc = (char)(c | 32);
         if (lc >= 'a' && lc <= 'z') {
             return lc - 'a' + 10;
         } else if (lc >= '0' && lc <= '9') {

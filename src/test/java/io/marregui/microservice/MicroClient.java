@@ -13,15 +13,15 @@ public final class MicroClient {
     private static final Gson GSON = new Gson();
 
     private static String prepareCommand(String[] params, int offset) {
-        StringBuilder sb = new StringBuilder(MicroserviceUtils.ROOTPATH);
+        StringBuilder sb = new StringBuilder(MicroserviceUtils.ROOT_PATH);
         for (int i = offset; i < params.length; i++) {
             String param = params[i].replaceAll(" ", "//");
             System.out.println(param);
-            sb.append(param).append(MicroserviceUtils.PATHSEP);
+            sb.append(param).append(MicroserviceUtils.PATH_SEP);
         }
         int sblen = sb.length();
         if (sblen > 0) {
-            sb.setLength(sblen - MicroserviceUtils.PATHSEP.length());
+            sb.setLength(sblen - MicroserviceUtils.PATH_SEP.length());
         }
         return sb.toString();
     }

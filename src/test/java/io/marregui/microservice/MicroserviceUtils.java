@@ -4,18 +4,10 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 
-/**
- * Utilities for microservices.
- *
- * @author Miguel Arregui (miguel.arregui@gmail.com)
- */
 public final class MicroserviceUtils {
     private static final ILogger LOGGER = Logger.loggerFor(MicroserviceUtils.class);
     private static final String[] NO_COMMAND_PARAMETERS = new String[]{ /* no params */};
 
-    /**
-     * Commonly used HTTP headers
-     */
     public enum HttpHeaders {
         ContentType("Content-Type"),
         TransferEncoding("Transfer-Encoding"),
@@ -38,10 +30,10 @@ public final class MicroserviceUtils {
         }
     }
 
-    public static final String ROOTPATH = "/"; // where the microservice resides (each ms works on a specific port)
-    public static final String PATHSEP = "/";
-    public static final String APPJSON = "application/json";
-    public static final String CHUNCKED = "chunked";
+    public static final String ROOT_PATH = "/"; // where the microservice resides (each ms works on a specific port)
+    public static final String PATH_SEP = "/";
+    public static final String APP_JSON = "application/json";
+    public static final String CHUNKED = "chunked";
     public static final String CRLF = "\r\n";
 
     /**
@@ -59,7 +51,7 @@ public final class MicroserviceUtils {
      * @return Makes name into a keyword (colon prefix, e.g. 'dateOfBirth' ->
      * ':dateOfBirth')
      */
-    public static String keyword(String name) {
+    public static String makeKeyword(String name) {
         return name.startsWith(":") ? name : String.format(":%s", name);
     }
 
@@ -71,7 +63,7 @@ public final class MicroserviceUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("GET %s HTTP/1.1", resource)).append(CRLF);
         sb.append(HttpHeaders.Host.str()).append(": ignore").append(CRLF);
-        sb.append(HttpHeaders.Accept.str()).append(": ").append(APPJSON).append(CRLF);
+        sb.append(HttpHeaders.Accept.str()).append(": ").append(APP_JSON).append(CRLF);
         sb.append(MicroserviceUtils.CRLF);
         return sb.toString();
     }
@@ -83,8 +75,8 @@ public final class MicroserviceUtils {
      * @param res (spark.Response)
      */
     static void setResponseHeaders(Response res) {
-        res.header(HttpHeaders.ContentType.str(), APPJSON);
-        res.header(HttpHeaders.TransferEncoding.str(), CHUNCKED);
+        res.header(HttpHeaders.ContentType.str(), APP_JSON);
+        res.header(HttpHeaders.TransferEncoding.str(), CHUNKED);
     }
 
     /**
@@ -98,16 +90,16 @@ public final class MicroserviceUtils {
      * @param withParameters if true, we append /* to the above route
      * @return a route path
      */
-    public static String routepath(String command, boolean withParameters) {
+    public static String routePath(String command, boolean withParameters) {
         if (null == command || command.isEmpty()) {
             throw new IllegalArgumentException("Command null or empty String");
         }
-        StringBuilder sb = new StringBuilder().append(ROOTPATH).append(command);
+        StringBuilder sb = new StringBuilder().append(ROOT_PATH).append(command);
         if (withParameters) {
-            sb.append(PATHSEP).append("*");
+            sb.append(PATH_SEP).append("*");
         }
         String route = sb.toString();
-        LOGGER.info(String.format("routepath(%s) = %s", command, route));
+        LOGGER.info(String.format("routePath(%s) = %s", command, route));
         return route;
     }
 
@@ -132,7 +124,7 @@ public final class MicroserviceUtils {
     public static String[] extractCommandParameters(String command, Request req) {
         String requestPathInfo = req.pathInfo();
         LOGGER.info(String.format("req.pathInfo(): %s", requestPathInfo));
-        int basePathlen = routepath(command, false).length();
+        int basePathlen = routePath(command, false).length();
         String params = (requestPathInfo.length() > basePathlen) ? requestPathInfo.substring(basePathlen + 1) : null;
         if (null != params && false == params.isEmpty()) {
             String[] split = params.replaceAll("//", " ").split("/");
