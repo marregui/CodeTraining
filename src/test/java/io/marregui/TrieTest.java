@@ -1,5 +1,6 @@
 package io.marregui;
 
+import io.marregui.datastructures.Trie;
 import org.junit.jupiter.api.Test;
 
 public class TrieTest {

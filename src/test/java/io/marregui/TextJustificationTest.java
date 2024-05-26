@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static io.marregui.TextJustification.fullJustify;
+import static io.marregui.arrays.TextJustification.fullJustify;
 
 public class TextJustificationTest {
 

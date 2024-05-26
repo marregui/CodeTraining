@@ -1,10 +1,11 @@
 package io.marregui;
 
+import io.marregui.datastructures.LRUCache;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static io.marregui.LRUCache.DLLifo;
-import static io.marregui.LRUCache.Node;
+import static io.marregui.datastructures.LRUCache.DLLifo;
+import static io.marregui.datastructures.LRUCache.Node;
 
 public class LRUCacheTest {
 

@@ -1,5 +1,6 @@
 package io.marregui;
 
+import io.marregui.trees.BinarySearchTree;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

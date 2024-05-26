@@ -1,5 +1,9 @@
 package io.marregui;
 
+import io.marregui.arrays.Arr;
+import io.marregui.util.ILogger;
+import io.marregui.util.LingeringDaemon;
+import io.marregui.util.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +13,10 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static io.marregui.Log.log;
 
 public class ArrTest {
+
+    private static final ILogger log = Logger.loggerFor(LingeringDaemon.class);
 
     private Arr arr;
     private Arr expected;
@@ -117,7 +122,7 @@ public class ArrTest {
         CountDownLatch sortStart = new CountDownLatch(1);
         CountDownLatch removeStart = new CountDownLatch(1);
 
-        Thread insert = Daemon.getDaemon("insert", null, sortStart, () -> {
+        Thread insert = LingeringDaemon.create("insert", null, sortStart, () -> {
             // populate the array
             Random rnd = new Random(2024);
             for (int i = 0; i < n; i++) {
@@ -131,10 +136,10 @@ public class ArrTest {
         });
         insert.start();
 
-        Thread sort = Daemon.getDaemon("sort", sortStart, removeStart, arr::sort);
+        Thread sort = LingeringDaemon.create("sort", sortStart, removeStart, arr::sort);
         sort.start();
 
-        Thread remove = Daemon.getDaemon("remove", removeStart, null, () -> {
+        Thread remove = LingeringDaemon.create("remove", removeStart, null, () -> {
             // remove odd numbers
             for (int size = arr.size(), i = size - (size % 2 == 0 ? 1 : 2); i > -1; i -= 2) {
                 arr.remove(i);
@@ -148,7 +153,7 @@ public class ArrTest {
         insert.interrupt();
         sort.interrupt();
 
-        log("ending%n", arr);
-        log("the end: %s%n", arr);
+        log.info("ending%n", arr);
+        log.info("the end: %s%n", arr);
     }
 }

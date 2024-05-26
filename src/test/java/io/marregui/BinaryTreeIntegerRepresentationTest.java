@@ -1,14 +1,14 @@
 package io.marregui;
 
+import io.marregui.trees.BinaryTreeIntegerRepresentation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static io.marregui.BinaryTreeIntegerRepresentation.TreeNode;
-import static io.marregui.BinaryTreeIntegerRepresentation.flatten;
+import io.marregui.trees.TreeNode;
+import static io.marregui.trees.BinaryTreeIntegerRepresentation.flatten;
 
 
 public class BinaryTreeIntegerRepresentationTest {
-
 
     @Test
     public void testSumNumbers() {
