@@ -2,6 +2,7 @@ package io.marregui.microservice;
 
 import io.marregui.util.ILogger;
 import io.marregui.util.Logger;
+import io.marregui.util.ThrlStringBuilder;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -62,8 +63,8 @@ public final class MicroserviceUtils {
      * @return A HTTP GET header for the resource
      */
     public static String createRequestHeader(String resource) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("GET %s HTTP/1.1", resource)).append(CRLF);
+        StringBuilder sb = ThrlStringBuilder.get();
+        sb.append("GET ").append(resource).append(" HTTP/1.1").append(CRLF);
         sb.append(HttpHeaders.Host.str()).append(": ignore").append(CRLF);
         sb.append(HttpHeaders.Accept.str()).append(": ").append(APP_JSON).append(CRLF);
         sb.append(MicroserviceUtils.CRLF);
@@ -96,12 +97,13 @@ public final class MicroserviceUtils {
         if (null == command || command.isEmpty()) {
             throw new IllegalArgumentException("Command null or empty String");
         }
-        StringBuilder sb = new StringBuilder().append(ROOT_PATH).append(command);
+        StringBuilder sb = ThrlStringBuilder.get();
+        sb.append(ROOT_PATH).append(command);
         if (withParameters) {
             sb.append(PATH_SEP).append("*");
         }
         String route = sb.toString();
-        LOGGER.info(String.format("routePath(%s) = %s", command, route));
+        LOGGER.info("routePath(%s) = %s", command, route);
         return route;
     }
 
@@ -125,13 +127,13 @@ public final class MicroserviceUtils {
      */
     public static String[] extractCommandParameters(String command, Request req) {
         String requestPathInfo = req.pathInfo();
-        LOGGER.info(String.format("req.pathInfo(): %s", requestPathInfo));
+        LOGGER.info("req.pathInfo(): %s", requestPathInfo);
         int basePathlen = routePath(command, false).length();
         String params = (requestPathInfo.length() > basePathlen) ? requestPathInfo.substring(basePathlen + 1) : null;
         if (null != params && false == params.isEmpty()) {
             String[] split = params.replaceAll("//", " ").split("/");
             for (int i = 0; i < split.length; i++) {
-                LOGGER.info(String.format("p%d: %s", i, split[i]));
+                LOGGER.info("p%d: %s", i, split[i]);
             }
             return split;
         }

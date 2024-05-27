@@ -1,5 +1,7 @@
 package io.marregui.microservice;
 
+import io.marregui.util.ThrlStringBuilder;
+
 public class ResponseMessage<T> {
     public enum Status {
         Success, Failure;
@@ -38,6 +40,8 @@ public class ResponseMessage<T> {
 
     @Override
     public String toString() {
-        return String.format("{\"status\": \"%s\", \"cargo\": \"%s\"}", status, cargo);
+        StringBuilder sb = ThrlStringBuilder.get();
+        sb.append("{status=").append(status).append(", cargo='").append(cargo).append("'}");
+        return sb.toString();
     }
 }

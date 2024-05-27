@@ -2,8 +2,8 @@ package io.marregui;
 
 import io.marregui.arrays.Arr;
 import io.marregui.util.ILogger;
-import io.marregui.util.LingeringDaemon;
 import io.marregui.util.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -156,4 +156,53 @@ public class ArrTest {
         log.info("ending%n", arr);
         log.info("the end: %s%n", arr);
     }
+
+    private static class LingeringDaemon {
+
+        // must be interrupted for it to terminate
+        public static Thread create(String name, @Nullable CountDownLatch start, @Nullable CountDownLatch next, Runnable task) {
+            Thread thread = new Thread(() -> {
+                if (start != null) {
+                    try {
+                        start.await();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+
+                Throwable error = null;
+                try {
+                    task.run();
+                } catch (Throwable t) {
+                    error = t;
+                } finally {
+                    if (next != null) {
+                        next.countDown();
+                        if (error == null) {
+                            waitLoop();
+                        }
+                    }
+                }
+            }, name);
+            thread.setDaemon(true);
+            return thread;
+        }
+
+        private static void waitLoop() {
+            long cnt = 0;
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100L);
+                    if (cnt == Long.MAX_VALUE) {
+                        cnt = -1;
+                    }
+                    cnt++;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
 }

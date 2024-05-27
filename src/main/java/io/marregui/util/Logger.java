@@ -6,18 +6,28 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Logger implements ILogger {
 
     private static final ConcurrentMap<Class<?>, ILogger> LOGGERS = new ConcurrentHashMap<>();
-    private static final Level DEFAULT_LEVEL = Level.INFO;
+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            EXECUTOR.shutdown();
+            long countDown = Long.MAX_VALUE;
+            while (!EXECUTOR.isTerminated() && countDown > 0) {
+                countDown--;
+            }
+        }));
+    }
 
     public static final ILogger loggerFor(Class<?> clazz) {
         return LOGGERS.computeIfAbsent(clazz, Logger::new);
     }
 
-    private final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+
     private final AtomicReference<Level> level;
 
 
     private Logger(Class<?> ignore) {
-        level = new AtomicReference<>(DEFAULT_LEVEL);
+        level = new AtomicReference<>(Level.INFO);
     }
 
     @Override
@@ -32,8 +42,9 @@ public class Logger implements ILogger {
 
     @Override
     public void log(Level level, String format, Object... args) {
-        if (getLevel().order() >= level.order()) {
-            EXECUTOR.submit(() -> processLog(level, format, args));
+        if (getLevel().greaterEqual(level)) {
+            StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+            EXECUTOR.submit(() -> processLog(stack, level, format, args));
         }
     }
 
@@ -57,27 +68,31 @@ public class Logger implements ILogger {
         log(Level.ERROR, format, args);
     }
 
-    private static void processLog(Level level, String format, Object... args) {
+    private static void processLog(StackTraceElement[] stack, Level level, String format, Object... args) {
         StringBuilder sb = ThrlStringBuilder.get();
-
+        // header
         sb.append(level)
                 .append(" |").append(TimeUnit.NANOSECONDS.toMicros(System.nanoTime())).append("| ")
-                .append(Thread.currentThread().getName()).append(':');
-
-        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-        if (stack.length > 1) {
-            StackTraceElement e = stack[1];
-            String className = e.getClassName();
+                .append(Thread.currentThread().getName()).append('/');
+        if (stack != null && stack.length > 3) {
+            String className;
+            StackTraceElement e = null;
+            for (int i = 2; i < stack.length; i++) {
+                e = stack[i];
+                if (!stack[i].getClassName().endsWith(Logger.class.getName())) {
+                    break;
+                }
+            }
+            className = e.getClassName();
             int j = className.length() - 1;
             while (j > 0 && className.charAt(j) != '.') {
                 --j;
             }
             j++;
             sb.append(className.subSequence(j, className.length())).append('.').append(e.getMethodName());
-            sb.append('.').append(e.getLineNumber()).append(") ");
+            sb.append('.').append(e.getLineNumber()).append(": ");
         }
-
-        // append the formatted message
+        // formatted message
         int argsIdx = 0;
         char c;
         for (int i = 0, limit = format.length(); i < limit; i++) {
@@ -86,7 +101,6 @@ public class Logger implements ILogger {
                 sb.append(c);
                 continue;
             }
-
             // process %format
             i++;
             if (i < limit) {

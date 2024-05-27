@@ -32,17 +32,17 @@ public class Microservice {
         });
         notFound((req, res) -> {
             setResponseHeaders(res);
-            return ResponseMessage.failure(String.format("Command not supported: '%s', use: %s", req.pathInfo(), usage));
+            return ResponseMessage.failure(String.format("command not supported: '%s', use: %s", req.pathInfo(), usage));
         });
         LOGGER.info(String.format("Default page: %s", usage));
     }
 
     void armCommand(String command) {
-        LOGGER.info(String.format("Arming command: '%s'", command));
+        LOGGER.info("arming command: '%s'", command);
         Route routeAction = (req, res) -> {
             String[] params = extractCommandParameters(command, req);
             setResponseHeaders(res);
-            return GSON.toJson(ResponseMessage.success(String.format("Hello!, plus extra: %s", Arrays.asList(params))));
+            return GSON.toJson(ResponseMessage.success(String.format("Hello!, plus extra: %s", Arrays.toString(params))));
         };
         get(routePath(command, false), APP_JSON, routeAction); // parameter-less
         get(routePath(command, true), APP_JSON, routeAction); // with parameters

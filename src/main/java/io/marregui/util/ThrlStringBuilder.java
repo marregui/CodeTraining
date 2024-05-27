@@ -5,7 +5,9 @@ public final class ThrlStringBuilder {
     private static final ThreadLocal<StringBuilder> SB = ThreadLocal.withInitial(StringBuilder::new);
 
     public static StringBuilder get() {
-        return SB.get();
+        StringBuilder sb =  SB.get();
+        sb.setLength(0);
+        return sb;
     }
 
     private ThrlStringBuilder() {

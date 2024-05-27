@@ -2,6 +2,7 @@ package io.marregui.microservice;
 
 import io.marregui.util.ILogger;
 import io.marregui.util.Logger;
+import io.marregui.util.ThrlStringBuilder;
 
 import java.io.BufferedReader;
 
@@ -26,7 +27,7 @@ public final class HttpChunkedReader {
      * @throws Exception
      */
     public static String slurp(BufferedReader br) throws Exception {
-        StringBuilder lines = new StringBuilder();
+        StringBuilder lines = ThrlStringBuilder.get();
         int httpStatus;
         long nextChunkSize = -1;
         SlurpStatus slurpStatus = SlurpStatus.ExpectingHTTPBegin;
@@ -44,7 +45,7 @@ public final class HttpChunkedReader {
                     break;
 
                 case ReadingHeaders:
-                    if (line.isEmpty()) {
+                    if (line.isBlank()) {
                         slurpStatus = SlurpStatus.ReadingSize;
                         lines.setLength(0);
                         LOGGER.debug("End of HTTP headers");
@@ -91,19 +92,19 @@ public final class HttpChunkedReader {
 
     private static long hexToDec(String hex) {
         long dec = 0;
-        long pow = 1L;
-        for (int i = hex.length() - 1; i >= 0; i--, pow *= 16L) {
-            dec += hexToDec(hex.charAt(i)) * pow;
+        long pow = 1;
+        for (int j = hex.length() - 1; j > -1; j--, pow *= 16) {
+            dec += hexToDec(hex.charAt(j)) * pow;
         }
         return dec;
     }
 
     private static int hexToDec(char c) {
-        char lc = (char)(c | 32);
-        if (lc >= 'a' && lc <= 'z') {
-            return lc - 'a' + 10;
-        } else if (lc >= '0' && lc <= '9') {
-            return c - '0';
+        int lc = c | 32;
+        if (lc > 96 && lc < 123) { // 'a'..'z'
+            return lc - 87; // lc - 'a' + 10
+        } else if (lc > 47 && lc < 58) { //'0'..'9'
+            return c - 48; // c - '0'
         }
         throw new IllegalArgumentException(String.format("Not a valid hex: %c", c));
     }

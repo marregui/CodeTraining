@@ -10,8 +10,8 @@ public interface ILogger {
             this.order = order;
         }
 
-        public int order() {
-            return order;
+        public boolean greaterEqual(Level that) {
+            return order >= that.order;
         }
     }
 
